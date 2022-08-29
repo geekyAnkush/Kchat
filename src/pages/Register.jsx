@@ -1,13 +1,63 @@
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Logo from "../assets/logo.svg";
+import axios from "axios";
+import { registerRoute } from "../utils/apiRoutes";
 
 const Register = () => {
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert("form");
+  const navigate = useNavigate();
+  const [values, setValues] = useState({
+    username: "",
+    password: "",
+    email: "",
+    confirmPassword: "",
+  });
+  const toastOptions = {
+    position: "bottom-right",
+    autoClose: 8000,
+    pauseOnHover: true,
+    draggable: true,
+    theme: "dark",
   };
-  const handleChange = (e) => {};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (handleValidation()) {
+      const { username, password, email } = values;
+      const { data } = await axios.post(registerRoute, {
+        username,
+        email,
+        password,
+      });
+      if (data.status === false) {
+        toast.error(data.msg, toastOptions);
+      }
+      if (data.status === true) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+        navigate("/");
+      }
+    }
+  };
+  const handleValidation = () => {
+    const { username, password, confirmPassword } = values;
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match", toastOptions);
+      return false;
+    } else if (username.length < 3) {
+      toast.error("username should be greater than 3 characters", toastOptions);
+      return false;
+    } else if (password.length < 8) {
+      toast.error("password length should be greater than 8", toastOptions);
+      return false;
+    } else return true;
+  };
+  const handleChange = (event) => {
+    setValues((prev) => {
+      return { ...prev, [event.target.name]: event.target.value };
+    });
+  };
 
   return (
     <>
@@ -20,25 +70,29 @@ const Register = () => {
           <input
             type="text"
             placeholder="Username"
-            name="Username"
+            name="username"
+            required
             onChange={(e) => handleChange(e)}
           />
           <input
             type="email"
             placeholder="Email"
             name="email"
+            required
             onChange={(e) => handleChange(e)}
           />
           <input
             type="password"
             placeholder="Password"
             name="password"
+            required
             onChange={(e) => handleChange(e)}
           />
           <input
             type="password"
             placeholder="Confirm Password"
             name="confirmPassword"
+            required
             onChange={(e) => handleChange(e)}
           />
           <button>Register</button>
@@ -47,6 +101,7 @@ const Register = () => {
           </span>
         </form>
       </FormContainer>
+      <ToastContainer />
     </>
   );
 };
