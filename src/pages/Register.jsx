@@ -22,6 +22,11 @@ const Register = () => {
     draggable: true,
     theme: "dark",
   };
+  useEffect(() => {
+    if (localStorage.getItem("kchat-user")) {
+      navigate("/");
+    }
+  }, []);
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (handleValidation()) {
@@ -35,7 +40,7 @@ const Register = () => {
         toast.error(data.msg, toastOptions);
       }
       if (data.status === true) {
-        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("kchat-user", JSON.stringify(data.user));
         navigate("/");
       }
     }
