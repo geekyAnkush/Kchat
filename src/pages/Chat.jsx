@@ -9,6 +9,7 @@ const Chat = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState({});
   const [contacts, setContacts] = useState([]);
+  const [currentChat, setCurrentChat] = useState(null);
   useEffect(() => {
     const check = async () => {
       setUser(await JSON.parse(localStorage.getItem("kchat-user")));
@@ -27,10 +28,17 @@ const Chat = () => {
     };
     fetch();
   }, [user]);
+  const handleChatChange = (chat) => {
+    setCurrentChat(chat);
+  };
   return (
     <Container>
       <div className="container">
-        <Contacts contacts={contacts} currentUser={user} />
+        <Contacts
+          contacts={contacts}
+          currentUser={user}
+          changeChat={handleChatChange}
+        />
       </div>
     </Container>
   );
