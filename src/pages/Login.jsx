@@ -15,7 +15,7 @@ const Login = () => {
   });
   const toastOptions = {
     position: "bottom-right",
-    autoClose: 8000,
+    autoClose: 5000,
     pauseOnHover: true,
     draggable: true,
     theme: "dark",
@@ -24,7 +24,7 @@ const Login = () => {
     if (localStorage.getItem("kchat-user")) {
       navigate("/");
     }
-  }, []);
+  });
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (handleValidation()) {
