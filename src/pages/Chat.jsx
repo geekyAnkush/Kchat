@@ -1,20 +1,60 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import styled from "styled-components";
+import { getAllUsersRoute } from "../utils/apiRoutes";
+import Contacts from "../components/Contacts";
 
 const Chat = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState({});
+  const [contacts, setContacts] = useState([]);
   useEffect(() => {
     const check = async () => {
-      let temp = await JSON.parse(localStorage.getItem("kchat-user"));
-      setUser(temp);
+      setUser(await JSON.parse(localStorage.getItem("kchat-user")));
       if (user?.isAvatarImageSet === false) {
         navigate("/setAvatar");
       }
     };
     check();
   }, [navigate, user.isAvatarImageSet]);
-  return <div>Chat</div>;
+  useEffect(() => {
+    const fetch = async () => {
+      if (user) {
+        const { data } = await axios.get(`${getAllUsersRoute}/${user._id}`);
+        setContacts(data.data);
+      }
+    };
+    fetch();
+  }, [user]);
+  return (
+    <Container>
+      <div className="container">
+        <Contacts contacts={contacts} currentUser={user} />
+      </div>
+    </Container>
+  );
 };
+
+const Container = styled.div`
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  background-color: #131324;
+  .container {
+    height: 85vh;
+    width: 85vw;
+    background-color: #00000076;
+    display: grid;
+    grid-template-columns: 25% 75%;
+    @media screen and(min-width:750px) and(max-width:1000px) {
+      grid-template-columns: 35% 65%;
+    }
+  }
+`;
 
 export default Chat;
